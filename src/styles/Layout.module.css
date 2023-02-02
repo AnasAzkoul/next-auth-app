@@ -1,0 +1,66 @@
+.imgStyle {
+  @apply bg-gradient-to-r from-blue-500 to-indigo-500; 
+  position: relative;
+  overflow: hidden; 
+}
+
+.cartoonImg {
+  background: url('/assets/img2.png') no-repeat;
+  position: absolute;
+  left: 0;
+  right: 0; 
+  top: 0; 
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: 65% 100px;
+  z-index: 1;
+}
+
+.cloud__one {
+  background: url('/assets/cloud_1.png') no-repeat;
+  position: absolute;
+  top: 65%; 
+  left: 10%; 
+  width: 180px;
+  height: 100px;
+  background-size: contain;
+  z-index: 2;
+  /* animation: cloud_one 25.5s ease-in 5.9s infinite; */
+  transform: translateX(290%);
+}
+
+.cloud__two{
+  background: url('/assets/cloud_2.png') no-repeat;
+  position: absolute;
+  top: 49%; 
+  left: 50%; 
+  width: 200px;
+  height: 100px;
+  background-size: contain;
+  z-index: 0;
+  /* animation: cloud_one 25.5s ease-in 5.9s infinite; */
+  transform: translateX(290%);
+}
+
+/* css key frames */
+
+@keyframes cloud_one {
+  0% {
+    transform: translateX(290%);
+  }
+  
+  100% {
+    transform: translateX(-250%)
+  }
+}
+@keyframes cloud_two {
+  0% {
+    transform: translateX(160%);
+  }
+  
+  100% {
+    transform: translateX(-250%)
+  }
+}
