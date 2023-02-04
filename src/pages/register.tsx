@@ -7,10 +7,62 @@ import Image from 'next/image';
 import styles from '../styles/form.module.css';
 import { HiAtSymbol, HiFingerPrint, HiOutlineUser } from 'react-icons/hi';
 
-type Props = {};
+const Register = () => {
+  const [show, setShow] = useState({ password: false, cPassword: false });
+  const [userInfo, setUserInfo] = useState({
+    username: '',
+    email: '',
+    password: '',
+    cPassword: '',
+  });
 
-const Register = (props: Props) => {
-  const [show, setShow] = useState({password: false, cPassword: false});
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInfo((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
+    if (userInfo.password === userInfo.cPassword) {
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: "POST", 
+          body: JSON.stringify({
+            username: userInfo.username,
+            email: userInfo.email,
+            password: userInfo.password, 
+          }), 
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if (!response.ok) {
+          setUserInfo({ username: '', email: '', password: '', cPassword: '' });
+          throw new Error('Bad Response', {
+            cause: response, 
+          })
+        }
+        
+        const newUser = await response.json(); 
+        
+        console.log(newUser); 
+        
+        setUserInfo({username: '', email: '', password: '', cPassword: ''})
+      
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error)
+        }
+      }
+    }
+
+  };
+
   return (
     <>
       <Head>
@@ -26,13 +78,15 @@ const Register = (props: Props) => {
             </p>
           </div>
           {/* Form */}
-          <form className='flex flex-col gap-5'>
+          <form className='flex flex-col gap-5' onSubmit={(e) => handleSubmit(e)}>
             <div className={styles.input_group}>
               <input
                 type='text'
                 name='username'
                 placeholder='username'
                 className={styles.input_text}
+                value={userInfo.username}
+                onChange={(e) => handleInputChange(e)}
               />
               <span className='icon flex items-center px-4'>
                 <HiOutlineUser size={25} />
@@ -44,6 +98,8 @@ const Register = (props: Props) => {
                 name='email'
                 placeholder='email'
                 className={styles.input_text}
+                onChange={(e) => handleInputChange(e)}
+                value={userInfo.email}
               />
               <span className='icon flex items-center px-4'>
                 <HiAtSymbol size={25} />
@@ -55,10 +111,14 @@ const Register = (props: Props) => {
                 name='password'
                 placeholder='password'
                 className={styles.input_text}
+                onChange={(e) => handleInputChange(e)}
+                value={userInfo.password}
               />
               <span
                 className='icon flex items-center px-4'
-                onClick={() => setShow((prev) => ({...prev, password: !show.password}))}
+                onClick={() =>
+                  setShow((prev) => ({ ...prev, password: !show.password }))
+                }
               >
                 <HiFingerPrint size={25} />
               </span>
@@ -69,10 +129,14 @@ const Register = (props: Props) => {
                 name='cPassword'
                 placeholder='confirm password'
                 className={styles.input_text}
+                onChange={(e) => handleInputChange(e)}
+                value={userInfo.cPassword}
               />
               <span
                 className='icon flex items-center px-4'
-                onClick={() => setShow((prev) => ({...prev, cPassword: !show.cPassword}))}
+                onClick={() =>
+                  setShow((prev) => ({ ...prev, cPassword: !show.cPassword }))
+                }
               >
                 <HiFingerPrint size={25} />
               </span>

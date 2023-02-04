@@ -1,25 +1,54 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
 import Layout from '@/layout/Layout';
 import Link from 'next/link';
 import styles from '../styles/form.module.css';
-import {HiAtSymbol, HiFingerPrint} from 'react-icons/hi';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { HiAtSymbol, HiFingerPrint } from 'react-icons/hi';
+import {signIn} from 'next-auth/react';
+import { useRouter } from 'next/router';
 
-type Props = {};
 
-const LogIn = (props: Props) => {
-  const [show, setShow] = useState(false); 
+
+const LogIn = () => {
+  const [show, setShow] = useState(false);
+  const [userInfo, setUserInfo] = useState({email: '', password: ''});
+  const router = useRouter(); 
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInfo((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
+    });
+  };
+  
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+
+    const status = await signIn('credentials', {
+      callbackUrl: 'http://localhost:3000', 
+      redirect: false, 
+      email: userInfo.email, 
+      password: userInfo.password
+    });
     
+    console.log(status); 
+    
+    if (status?.ok) {
+      router.push(status?.url!); 
+    }
+  }
+
   const handleGoogleSignIn = () => {
     signIn('google', { callbackUrl: 'http://localhost:3000' });
-  }
+  };
   const handleGithubSignIn = async () => {
-    signIn('github', {callbackUrl: 'http://localhost:3000'})
-  }
-  
+    signIn('github', { callbackUrl: 'http://localhost:3000' });
+  };
+
   return (
     <>
       <Head>
@@ -35,13 +64,15 @@ const LogIn = (props: Props) => {
             </p>
           </div>
           {/* Form */}
-          <form className='flex flex-col gap-5'>
+          <form className='flex flex-col gap-5' onSubmit={handleCredentialsSignIn}>
             <div className={styles.input_group}>
               <input
                 type='email'
                 name='email'
                 placeholder='email'
                 className={styles.input_text}
+                onChange={(e) => handleInputChange(e)}
+                value={userInfo.email}
               />
               <span className='icon flex items-center px-4'>
                 <HiAtSymbol size={25} />
@@ -53,6 +84,8 @@ const LogIn = (props: Props) => {
                 name='password'
                 placeholder='password'
                 className={styles.input_text}
+                onChange={(e) => handleInputChange(e)}
+                value={userInfo.password}
               />
               <span
                 className='icon flex items-center px-4'
@@ -83,7 +116,11 @@ const LogIn = (props: Props) => {
               </button>
             </div>
             <div className='input-button'>
-              <button type='button' className={styles.button__custom} onClick={handleGithubSignIn}>
+              <button
+                type='button'
+                className={styles.button__custom}
+                onClick={handleGithubSignIn}
+              >
                 Sign in with Github
                 <Image
                   src='/assets/github.svg'

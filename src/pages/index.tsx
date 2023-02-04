@@ -79,7 +79,7 @@ function AuthorizedUser({session, signOut}: AuthorizedUserPropTypes) {
 
 export const getServerSideProps: GetServerSideProps = async ({req}) => {
   const session = await getSession({req}); 
-  
+    
   if (!session) {
     return {
       redirect: {
@@ -88,7 +88,7 @@ export const getServerSideProps: GetServerSideProps = async ({req}) => {
       }
     }
   }
-  
+
   return {
     props: {
       session
