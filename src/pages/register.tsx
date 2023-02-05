@@ -5,7 +5,8 @@ import Layout from '@/layout/Layout';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from '../styles/form.module.css';
-import { HiAtSymbol, HiFingerPrint, HiOutlineUser } from 'react-icons/hi';
+import {HiAtSymbol, HiFingerPrint, HiOutlineUser} from 'react-icons/hi';
+import useValidateForm from '@/hooks/useValidateForm';
 
 const Register = () => {
   const [show, setShow] = useState({ password: false, cPassword: false });
@@ -15,6 +16,7 @@ const Register = () => {
     password: '',
     cPassword: '',
   });
+  const {touched, error, onBlur} = useValidateForm(); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo((prev) => {
@@ -78,41 +80,49 @@ const Register = () => {
             </p>
           </div>
           {/* Form */}
-          <form className='flex flex-col gap-5' onSubmit={(e) => handleSubmit(e)}>
+          <form
+            className='flex flex-col gap-5'
+            onSubmit={(e) => handleSubmit(e)}
+          >
             <div className={styles.input_group}>
               <input
                 type='text'
                 name='username'
                 placeholder='username'
-                className={styles.input_text}
+                className={`${styles.input_text} ${error?.username && touched?.username ? styles.input_error : ''}`}
                 value={userInfo.username}
                 onChange={(e) => handleInputChange(e)}
+                onBlur={(e) => onBlur(e)}
               />
               <span className='icon flex items-center px-4'>
                 <HiOutlineUser size={25} />
               </span>
             </div>
+            {error?.username && touched?.username ? <span className='text-rose-400 text-start px-4'>{error.username}</span> : null}
             <div className={styles.input_group}>
               <input
                 type='email'
                 name='email'
                 placeholder='email'
-                className={styles.input_text}
+                className={`${styles.input_text} ${error?.email && touched?.email ? styles.input_error : ''}`}
                 onChange={(e) => handleInputChange(e)}
                 value={userInfo.email}
+                onBlur={(e) => onBlur(e)}
               />
               <span className='icon flex items-center px-4'>
                 <HiAtSymbol size={25} />
               </span>
             </div>
+            {error?.email && touched?.email ? <span className='text-rose-400 text-start px-4'>{error.email}</span> : null}
             <div className={styles.input_group}>
               <input
                 type={show.password ? 'text' : 'password'}
                 name='password'
                 placeholder='password'
-                className={styles.input_text}
+                className={`${styles.input_text} ${error?.password && touched?.password ? styles.input_error : ''}`}
                 onChange={(e) => handleInputChange(e)}
                 value={userInfo.password}
+                onBlur={(e) => onBlur(e)}
               />
               <span
                 className='icon flex items-center px-4'
@@ -123,14 +133,16 @@ const Register = () => {
                 <HiFingerPrint size={25} />
               </span>
             </div>
+            {error?.password && touched?.password ? <span className='text-rose-400 text-start px-4'>{error.password}</span> : null}
             <div className={styles.input_group}>
               <input
                 type={show.cPassword ? 'text' : 'password'}
                 name='cPassword'
                 placeholder='confirm password'
-                className={styles.input_text}
+                className={`${styles.input_text} ${error?.cPassword && touched?.cPassword ? styles.input_error : ''}`}
                 onChange={(e) => handleInputChange(e)}
                 value={userInfo.cPassword}
+                onBlur={(e) => onBlur(e)}
               />
               <span
                 className='icon flex items-center px-4'
@@ -141,6 +153,7 @@ const Register = () => {
                 <HiFingerPrint size={25} />
               </span>
             </div>
+            {error?.cPassword && touched?.cPassword ? <span className='text-rose-400 text-start px-4'>{error.cPassword}</span> : null}
             {/* Login buttons */}
             <div className='input-button'>
               <button type='submit' className={styles.button}>

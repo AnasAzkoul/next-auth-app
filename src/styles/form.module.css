@@ -5,7 +5,11 @@
 
 .input_text {
   @apply w-full py-4 px-6 border rounded-xl bg-slate-50; 
-  @apply focus:outline-none border-none 
+  /* @apply focus:outline-none border-none  */
+}
+
+.input_error {
+  @apply border border-rose-400
 }
 
 .button {

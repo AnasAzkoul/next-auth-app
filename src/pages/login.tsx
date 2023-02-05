@@ -6,16 +6,18 @@ import Layout from '@/layout/Layout';
 import Link from 'next/link';
 import styles from '../styles/form.module.css';
 import { HiAtSymbol, HiFingerPrint } from 'react-icons/hi';
-import {signIn} from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
+import {useRouter} from 'next/router';
+import useValidateForm from '@/hooks/useValidateForm';
 
 
 
 const LogIn = () => {
   const [show, setShow] = useState(false);
-  const [userInfo, setUserInfo] = useState({email: '', password: ''});
-  const router = useRouter(); 
-
+  const [userInfo, setUserInfo] = useState({ email: '', password: '' });
+  const router = useRouter();
+  const {touched, error, onBlur} = useValidateForm(); 
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo((prev) => {
       return {
@@ -24,23 +26,21 @@ const LogIn = () => {
       };
     });
   };
-  
+
   const handleCredentialsSignIn = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     const status = await signIn('credentials', {
-      callbackUrl: 'http://localhost:3000', 
-      redirect: false, 
-      email: userInfo.email, 
-      password: userInfo.password
+      callbackUrl: 'http://localhost:3000',
+      redirect: false,
+      email: userInfo.email,
+      password: userInfo.password,
     });
-    
-    console.log(status); 
-    
+
     if (status?.ok) {
-      router.push(status?.url!); 
+      router.push(status?.url!);
     }
-  }
+  };
 
   const handleGoogleSignIn = () => {
     signIn('google', { callbackUrl: 'http://localhost:3000' });
@@ -64,28 +64,38 @@ const LogIn = () => {
             </p>
           </div>
           {/* Form */}
-          <form className='flex flex-col gap-5' onSubmit={handleCredentialsSignIn}>
+          <form
+            className='flex flex-col gap-5'
+            onSubmit={handleCredentialsSignIn}
+          >
             <div className={styles.input_group}>
               <input
                 type='email'
                 name='email'
                 placeholder='email'
-                className={styles.input_text}
+                className={`${styles.input_text} ${
+                  error?.email && touched?.email ? styles.input_error : ''
+                }`}
                 onChange={(e) => handleInputChange(e)}
                 value={userInfo.email}
+                onBlur={(e) => onBlur(e)}
               />
               <span className='icon flex items-center px-4'>
                 <HiAtSymbol size={25} />
               </span>
             </div>
+            {error?.email && touched?.email ? <span className='text-rose-400 text-start px-4'>{error.email}</span> : null}
             <div className={styles.input_group}>
               <input
                 type={show ? 'text' : 'password'}
                 name='password'
                 placeholder='password'
-                className={styles.input_text}
+                className={`${styles.input_text} ${
+                  error?.password && touched?.password ? styles.input_error : ''
+                }`}
                 onChange={(e) => handleInputChange(e)}
                 value={userInfo.password}
+                onBlur={(e) => onBlur(e)}
               />
               <span
                 className='icon flex items-center px-4'
@@ -94,6 +104,7 @@ const LogIn = () => {
                 <HiFingerPrint size={25} />
               </span>
             </div>
+            {error?.password && touched?.password ? <span className='text-rose-400 text-start px-4'>{error.password}</span> : null}
             {/* Login buttons */}
             <div className='input-button'>
               <button type='submit' className={styles.button}>
